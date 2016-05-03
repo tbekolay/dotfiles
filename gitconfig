@@ -1,6 +1,20 @@
 [user]
   name = Trevor Bekolay
   email = tbekolay@gmail.com
+
+[alias]
+  ci = commit
+  co = checkout
+  ds = diff --staged
+  lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+  ls = ls-files
+  sh = show --stat
+  showtrackedignored = ls-files -i --exclude-standard
+  st = status -sb
+
+[branch]
+  autosetuprebase = always
+
 [color]
   branch = auto
   diff = auto
@@ -22,32 +36,29 @@
   added = green bold
   changed = yellow bold
   untracked = red
+
 [core]
   autocrlf = input
   editor = emacs-nw
   pager = less -FRSX
   whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
+
 [credential]
   helper = cache --timeout=3600
+
 [diff]
   tool = diffmerge
   mnemonicprefix = true
   algorithm = patience
-[merge]
-  log = true
-[branch]
-  autosetuprebase = always
-[push]
-  default = simple
 
-[alias]
-  ci = commit
-  co = checkout
-  ds = diff --staged
-  lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
-  ls = ls-files
-  sh = show --stat
-  showtrackedignored = ls-files -i --exclude-standard
-  st = status -sb
 [fetch]
   prune = true
+
+[merge]
+  log = true
+
+[pull]
+  rebase = true
+
+[push]
+  default = simple
