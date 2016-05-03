@@ -22,6 +22,7 @@ TARGETS[jupyter.js]=.jupyter/custom/custom.js
 TARGETS[jupyter_notebook_config.py]=.jupyter/jupyter_notebook_config.py
 TARGETS[refsrc]=.config/refs/refsrc
 TARGETS[gpg-agent.conf]=.gnupg/gpg-agent.conf
+TARGETS[gemrc]=.gemrc
 # --- Mac OS X specific
 if [[ $(uname) == 'Darwin' ]]; then
     TARGETS[hockey.lua]=/Applications/VLC.app/Contents/MacOS/share/lua/sd/hockey.lua
@@ -35,14 +36,14 @@ fi
 checkandlink () {
     SRC=$1
     DST=$2
-    DIR=$(dirname $DST)
+    DIR=$(dirname "$DST")
 
-    if [ ! -d $DIR ]; then
+    if [ ! -d "$DIR" ]; then
         echo "--- Making directory '$DIR'"
         mkdir -p "$DIR"
     fi
 
-    if [[ ! -h $DST || `readlink $DST` != $SRC ]]; then
+    if [[ ! -h "$DST" || $(readlink "$DST") != "$SRC" ]]; then
         echo "--- Linking $DST to $SRC"
         rm -rf "$DST"
         if [[ $SRC == *".service" ]]; then
