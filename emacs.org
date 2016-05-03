@@ -784,6 +784,16 @@ trailing whitespace from the file.
   (add-hook 'before-save-hook 'whitespace-cleanup)
 #+END_SRC
 
+Except when I don't want to do this, which happens
+when whitespace is meaningful (e.g., =cram= tests,
+adding newlines to Markdown).
+
+#+BEGIN_SRC elisp
+  (defun tb-dont-clean-whitespace ()
+    "Sets the before-save-hook to nil in this buffer."
+    (add-hook 'before-save-hook nil nil t))
+#+END_SRC
+
 I like to see bad whitespace. But not all whitespace.
 
 #+BEGIN_SRC elisp
