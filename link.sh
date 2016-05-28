@@ -24,6 +24,7 @@ TARGETS[refsrc]=.config/refs/refsrc
 TARGETS[gpg-agent.conf]=.gnupg/gpg-agent.conf
 TARGETS[gemrc]=.gemrc
 TARGETS[npmrc]=.npmrc
+TARGETS[flake8]=.config/flake8
 # --- Mac OS X specific
 if [[ $(uname) == 'Darwin' ]]; then
     TARGETS[hockey.lua]=/Applications/VLC.app/Contents/MacOS/share/lua/sd/hockey.lua
