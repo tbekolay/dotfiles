@@ -23,6 +23,7 @@ TARGETS[jupyter_notebook_config.py]=.jupyter/jupyter_notebook_config.py
 TARGETS[refsrc]=.config/refs/refsrc
 TARGETS[gpg-agent.conf]=.gnupg/gpg-agent.conf
 TARGETS[gemrc]=.gemrc
+TARGETS[npmrc]=.npmrc
 # --- Mac OS X specific
 if [[ $(uname) == 'Darwin' ]]; then
     TARGETS[hockey.lua]=/Applications/VLC.app/Contents/MacOS/share/lua/sd/hockey.lua
