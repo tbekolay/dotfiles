@@ -760,17 +760,29 @@ Saves a few more things.
 
 ** Spell Checking
 
-I like spell checking with [[http://www.emacswiki.org/emacs/FlySpell][FlySpell]], but we use =aspell=
-instead of the default =ispell=.
-
 #+BEGIN_SRC elisp
-  (use-package flyspell
+  ;; find aspell and hunspell automatically
+  (cond
+   ;; try hunspell at first
+    ;; if hunspell does NOT exist, use aspell
+   ((executable-find "hunspell")
+    (use-package flyspell
       :init
-      (setq-default ispell-program-name "hunspell")
+      (setq ispell-program-name "hunspell")
       (setq ispell-really-hunspell t)
       (setq flyspell-issue-message-flag nil)
+      (setq ispell-local-dictionary "en_US")
+      (setq ispell-local-dictionary-alist
+        '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
       (add-hook 'text-mode-hook (lambda () (flyspell-mode 1)))
-      (add-hook 'python-mode-hook (flyspell-prog-mode)))
+      (add-hook 'python-mode-hook (flyspell-prog-mode))))
+    ((executable-find "aspell")
+     (use-package flyspell
+       :init
+       (setq ispell-program-name "aspell")
+       (setq ispell-extra-args '("--sug-mode=ultra" "--lang=en_US"))
+       (add-hook 'text-mode-hook (lambda () (flyspell-mode 1)))
+       (add-hook 'python-mode-hook (flyspell-prog-mode)))))
 #+END_SRC
 
 * Miscellaneous Settings
@@ -952,8 +964,8 @@ using [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Uniquify.html]
 
 #+BEGIN_SRC elisp
   (use-package flycheck
-      :init (add-hook 'after-init-hook #'global-flycheck-mode)
-            (setq flycheck-javascript-standard-executable (expand-file-name "~/.npm/bin/standard")))
+      :init (add-hook 'after-init-hook #'global-flycheck-mode))
+  ;; (setq flycheck-javascript-standard-executable (expand-file-name "~/.npm/bin/standard")))
 #+END_SRC
 
 ** IRC
@@ -1086,7 +1098,18 @@ Gross. But we look at it every now and then.
 See [[file:emacs-javascript.org][emacs-javascript.el]] for details on working with JavaScript.
 
 #+BEGIN_SRC elisp
-  (setq js-indent-level 2)
+  (setq js-indent-level 4)
+  (use-package json-mode
+       :init
+       (add-hook 'json-mode-hook
+          (lambda ()
+            (make-local-variable 'js-indent-level)
+            (setq js-indent-level 2))))
+
+  (use-package tide  ;; https://github.com/ananthakumaran/tide
+       :init
+       :config
+       (tide-setup))
 #+END_SRC
 
 ** YAML
