@@ -1,26 +1,57 @@
-Host ctn08
-     HostName ctn08.uwaterloo.ca
-     User tbekolay
-     PubkeyAuthentication no
-
 Host ctnsrv
      HostName ctnsrv.uwaterloo.ca
      Port 3656
      User ctnuser
      PubkeyAuthentication no
 
-Host home
-     HostName 184.175.47.205
-     Port 22222
-     User tbekolay
-     PubkeyAuthentication no
-
-Host home-lan
-     HostName 192.168.1.131
-     User tbekolay
-     PubkeyAuthentication no
-
 Host compneuro
      HostName compneuro.uwaterloo.ca
      User cnrglab
      PubkeyAuthentication no
+
+Host board
+     HostName 192.168.10.2
+     User root
+     PubkeyAuthentication no
+     Ciphers aes256-ctr
+
+Host nengoforum
+     HostName 162.243.45.222
+     Port 3421
+     User tbekolay
+     ForwardAgent yes
+
+Host abrgpu
+     HostName abrgpu.uwaterloo.ca
+     Port 36563
+     User abruser
+     PubkeyAuthentication no
+
+Host gl
+     HostName gl.appliedbrainresearch.com
+     Port 36563
+     User tbekolay
+     ForwardAgent yes
+
+Host abrhost
+     User tbekolay
+     HostName 10.42.0.2
+     ProxyCommand ssh gl -W %h:%p
+     Port 22
+
+Host abrmh
+     User tbekolay
+     HostName 10.42.0.34
+     ProxyCommand ssh abrhost -W %h:%p
+     Port 22
+
+Host abrghrd
+     User tbekolay
+     HostName 10.42.0.100
+     ProxyCommand ssh abrhost -W %h:%p
+     Port 22
+
+Host intelhost
+     User celiasmith
+     HostName ncl-abr.research.intel-research.net
+     ProxyCommand ssh celiasmith@ssh.intel-research.net -W %h:%p
