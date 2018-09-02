@@ -1,6 +1,6 @@
 #+TITLE:  Emacs Configuration File
 #+AUTHOR: Trevor Bekolay
-$+EMAIL:  tbekolay@gmail.com
+#+EMAIL:  tbekolay@gmail.com
 
 * Introduction
 
@@ -304,6 +304,7 @@ sure that we only have spaces. See [[http://ergoemacs.org/emacs/emacs_tabs_space
 #+BEGIN_SRC elisp
   (setq-default indent-tabs-mode nil)
   (setq tab-width 4)
+  (setq-default c-basic-offset 4)
 #+END_SRC
 
 Make tab key do indent first then completion.
@@ -473,8 +474,8 @@ package fixes this.
 
 #+BEGIN_SRC elisp
   (use-package exec-path-from-shell
-      :if (and (eq system-type 'darwin) window-system)
-      :config (exec-path-from-shell-initialize))
+       :if (memq window-system '(mac ns x))
+       :config (exec-path-from-shell-initialize))
 #+END_SRC
 
 Next, if I ever want to use =proced-mode=, we have to do
@@ -687,10 +688,10 @@ So let's use it everywhere!
 
 #+BEGIN_SRC elisp
   (use-package ido
-      :config (ido-mode 1))
-
-  (use-package ido-ubiquitous
-      :init (setq ido-everywhere 1))
+      :config (ido-mode 1)
+              (ido-everywhere 1))
+  (use-package ido-completing-read+
+      :config (ido-ubiquitous-mode 1))
 #+END_SRC
 
 Use [[https://github.com/lewang/flx][flex matching]].
@@ -758,6 +759,21 @@ Saves a few more things.
 
 * Completion
 
+** Auto complete
+
+Especially useful for TypeScript development.
+
+#+BEGIN_SRC elisp
+  (use-package company
+      :defer 1
+      :init (setq company-tooltip-align-annotations t)
+      :bind ("C-M-i" . company-complete)
+      :config
+      (use-package company-quickhelp
+          :config (company-quickhelp-mode 1))
+      (global-company-mode))
+#+END_SRC
+
 ** Spell Checking
 
 #+BEGIN_SRC elisp
@@ -775,14 +791,14 @@ Saves a few more things.
       (setq ispell-local-dictionary-alist
         '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
       (add-hook 'text-mode-hook (lambda () (flyspell-mode 1)))
-      (add-hook 'python-mode-hook (flyspell-prog-mode))))
+      (add-hook 'python-mode-hook 'flyspell-prog-mode)))
     ((executable-find "aspell")
      (use-package flyspell
        :init
        (setq ispell-program-name "aspell")
        (setq ispell-extra-args '("--sug-mode=ultra" "--lang=en_US"))
        (add-hook 'text-mode-hook (lambda () (flyspell-mode 1)))
-       (add-hook 'python-mode-hook (flyspell-prog-mode)))))
+       (add-hook 'python-mode-hook 'flyspell-prog-mode))))
 #+END_SRC
 
 * Miscellaneous Settings
@@ -823,9 +839,27 @@ Here's a nice helper function to reindent the whole buffer.
   FIXME!
   (defun tb-indent-buffer ()
     "Indent the whole buffer."
+    (call-interactively 'mark-whole-buffer)
+    (call-interactively 'indent-region))
+#+END_SRC
+
+Here's one to convert underscore style variables to camelcase.
+
+#+BEGIN_SRC elisp
+  (defun tb-query-to-camelcase ()
     (interactive)
-    (mark-whole-buffer)
-    (indent-region))
+    (save-excursion
+      (goto-char (point-min))
+      (query-replace-regexp "\(\w\)_\(\w\)" "\1\,(upcase \2)")))
+#+END_SRC
+
+#+BEGIN_SRC elisp
+  (defun tb-to-camelcase ()
+    (interactive)
+    (save-excursion
+      (goto-char (point-min))
+      (while (search-forward-regexp "\(\w\)_\(\w\)" nil 'noerror)
+        (replace-match "\1\,(upcase \2)" nil 'literal))))
 #+END_SRC
 
 ** Expand-region
@@ -964,8 +998,13 @@ using [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Uniquify.html]
 
 #+BEGIN_SRC elisp
   (use-package flycheck
-      :init (add-hook 'after-init-hook #'global-flycheck-mode))
-  ;; (setq flycheck-javascript-standard-executable (expand-file-name "~/.npm/bin/standard")))
+      :bind (("M-n" . flycheck-next-error)
+             ("M-p" . flycheck-previous-error))
+      :init (add-hook 'after-init-hook #'global-flycheck-mode)
+            (setq flycheck-typescript-tslint-executable
+             (concat (file-name-as-directory "~/.npm/bin") "tslint"))
+            (setq flycheck-css-csslint-executable
+             (concat (file-name-as-directory "~/.npm/bin") "csslint")))
 #+END_SRC
 
 ** IRC
@@ -975,6 +1014,14 @@ ERC seems useful!
 #+BEGIN_SRC elisp
   (use-package erc
       :commands erc)
+#+END_SRC
+
+** Remote file editing (TRAMP)
+
+Comes with Emacs nowadays.
+
+#+BEGIN_SRC elisp
+  (setq tramp-default-method "ssh")
 #+END_SRC
 
 * Git
@@ -1005,7 +1052,8 @@ See [[file:emacs-org.org][emacs-org-mode.el]] for details on my [[http://www.org
 Make AUCTex aware of style files and multi-file documents.
 
 #+BEGIN_SRC elisp
-  (use-package auctex
+  (use-package tex
+      :ensure auctex
       :init (setq TeX-auto-save t)
             (setq TeX-parse-self t)
             (setq-default TeX-master nil)
@@ -1032,18 +1080,18 @@ Make shell scripts executable on save.
 
 My bread and butter. Let's make Emacs awesome for Python development.
 
-First, we need to install the =jedi= and =flake8= libraries.
+First, we need to install the =flake8= library.
 On Mac OS X, Homebrew does a good job with =site-packages=, so we can
 
 #+BEGIN_EXAMPLE
-  pip install jedi flake8
+  pip install flake8
 #+END_EXAMPLE
 
 On Debian, we leave things not in virtual environments up to the
 package manager, so we should do
 
 #+BEGIN_EXAMPLE
-  sudo apt-get install python-jedi python-flake8
+  sudo apt-get install python-flake8
 #+END_EXAMPLE
 
 Now, we'll set up the Emacs part of this.
@@ -1051,46 +1099,18 @@ Now, we'll set up the Emacs part of this.
 Have =flake8= run automatically with Flycheck.
 
 #+BEGIN_SRC elisp
-  (use-package python-mode
-      :init (add-hook 'python-mode-hook 'flycheck-mode))
+  (use-package company-anaconda)
+  (use-package anaconda-mode
+      :init (add-hook 'python-mode-hook 'anaconda-mode))
 #+END_SRC
 
-#+BEGIN_SRC elisp
-  (use-package jedi
-      :commands jedi:setup
-      :init
-      (add-hook 'python-mode-hook 'jedi:setup)
-      (setq jedi:complete-on-dot t))
-#+END_SRC
-
-The IPython notebook is quite useful, but so is Emacs.
-Obviously we can just do all of the notebook stuff in Emacs!
-
-First, we want to manage dependencies with =virtualenv=,
-so we'll use the =virtualenvwrapper= clone for Emacs.
-
-#+BEGIN_SRC elisp
-  (use-package virtualenvwrapper
-      :init (setq venv-location "~/.virtualenvs")
-      :config (venv-initialize-interactive-shells))
-#+END_SRC
-
-Now we'll install =ein= to actually edit notebooks in Emacs.
-
-Actually not right now. There are issues.
-
-#+BEGIN_SRC elisp :tangle no
-  (use-package ein
-      :commands (ein:notebooklist-open ein:jedi-setup)
-      :init (add-hook 'ein:connect-mode-hook 'ein:jedi-setup))
-#+END_SRC
 ** Matlab
 Gross. But we look at it every now and then.
 
 #+BEGIN_SRC elisp
  (use-package octave-mode
      :ensure f
-      :mode ("\\.m$" . octave-mode))
+     :mode ("\\.m$" . octave-mode))
 #+END_SRC
 
 ** JavaScript
@@ -1107,10 +1127,18 @@ See [[file:emacs-javascript.org][emacs-javascript.el]] for details on working wi
             (setq js-indent-level 2))))
 
   (use-package tide  ;; https://github.com/ananthakumaran/tide
-       :init
-       :config
-       (tide-setup))
+      :init (add-hook 'typescript-mode-hook #'tide-setup)
+            (setq tide-tsserver-process-environment
+             '("TSS_LOG=-level verbose -file /tmp/tbekolay/tss.log")))
+  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
+
+  (use-package prettier-js)
+
+  (use-package web-mode
+      :config (add-hook 'web-mode
+                        (lambda () (setq web-mode-enable-auto-quoting nil))))
 #+END_SRC
+
 
 ** YAML
 
@@ -1125,6 +1153,14 @@ See [[file:emacs-web.org][emacs-web.el]] for details on working with HTML and it
 
 #+BEGIN_SRC elisp :tangle no
   (load-library "init-web")
+#+END_SRC
+
+#+BEGIN_SRC elisp
+(use-package markdown-mode
+  :commands (markdown-mode)
+  :mode (("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown"))
 #+END_SRC
 
 ** Other
@@ -1182,12 +1218,7 @@ to conform to =elisp= standards.
   ;;; init ends here
 #+END_SRC
 
-
-#+DESCRIPTION: A literate programming version of my Emacs Initialization script, loaded by the .emacs file.
-#+PROPERTY:    results silent
-#+PROPERTY:    tangle ~/.emacs.d/init.el
-#+PROPERTY:    eval no-export
-#+PROPERTY:    comments org
-#+OPTIONS:     num:nil toc:nil todo:nil tasks:nil tags:nil
-#+OPTIONS:     skip:nil author:nil email:nil creator:nil timestamp:nil
-#+INFOJS_OPT:  view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+PROPERTY: header-args :tangle ~/.emacs.d/init.el :results silent :eval no-export
+#+OPTIONS: num:nil toc:nil todo:nil tasks:nil tags:nil
+#+OPTIONS: skip:nil author:nil email:nil creator:nil timestamp:nil
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
