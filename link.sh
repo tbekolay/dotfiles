@@ -10,7 +10,6 @@ TARGETS[redshift.conf]=.config/redshift.conf
 TARGETS[remove.apt]=.remove.apt
 TARGETS[remove.brew]=.remove.brew
 TARGETS[rtorrent.rc]=.rtorrent.rc
-TARGETS[theanorc]=.theanorc
 TARGETS[octaverc]=.octaverc
 TARGETS[i3.config]=.config/i3/config
 TARGETS[i3status.conf]=.i3status.conf
