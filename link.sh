@@ -24,6 +24,8 @@ TARGETS[gpg-agent.conf]=.gnupg/gpg-agent.conf
 TARGETS[gemrc]=.gemrc
 TARGETS[npmrc]=.npmrc
 TARGETS[flake8]=.config/flake8
+TARGETS[ignore]=.ignore
+TARGETS[ripgreprc]=.ripgreprc
 TARGETS[asflog.conf]=asf/NLog.config
 # --- Mac OS X specific
 if [[ $(uname) == 'Darwin' ]]; then
