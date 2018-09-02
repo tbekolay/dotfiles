@@ -59,10 +59,3 @@
 
 [pull]
   rebase = true
-
-[push]
-  default = simple
-[url "https://"]
-  insteadOf = git://
-[url "https://github.com/"]
-  insteadOf = git@github.com:
