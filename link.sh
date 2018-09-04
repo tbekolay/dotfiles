@@ -4,22 +4,13 @@ TARGETS[nanorc.d]=.nanorc.d
 TARGETS[xkb]=.xkb
 TARGETS[gitconfig]=.gitconfig
 TARGETS[install.apt]=.install.apt
-TARGETS[install.brew]=.install.brew
 TARGETS[nanorc]=.nanorc
 TARGETS[redshift.conf]=.config/redshift.conf
-TARGETS[remove.apt]=.remove.apt
-TARGETS[remove.brew]=.remove.brew
-TARGETS[rtorrent.rc]=.rtorrent.rc
-TARGETS[octaverc]=.octaverc
-TARGETS[i3.config]=.config/i3/config
-TARGETS[i3status.conf]=.i3status.conf
 TARGETS[sshconfig]=.ssh/config
-TARGETS[hgrc]=.hgrc
 TARGETS[fonts.conf]=.config/fontconfig/fonts.conf
 TARGETS[Xresources]=.Xresources
 TARGETS[jupyter.js]=.jupyter/custom/custom.js
 TARGETS[jupyter_notebook_config.py]=.jupyter/jupyter_notebook_config.py
-TARGETS[refsrc]=.config/refs/refsrc
 TARGETS[gpg-agent.conf]=.gnupg/gpg-agent.conf
 TARGETS[gemrc]=.gemrc
 TARGETS[npmrc]=.npmrc
@@ -27,12 +18,14 @@ TARGETS[flake8]=.config/flake8
 TARGETS[ignore]=.ignore
 TARGETS[ripgreprc]=.ripgreprc
 TARGETS[asflog.conf]=asf/NLog.config
-# --- Mac OS X specific
-if [[ $(uname) == 'Darwin' ]]; then
-    TARGETS[hockey.lua]=/Applications/VLC.app/Contents/MacOS/share/lua/sd/hockey.lua
-elif [[ $(uname) == 'Linux' ]]; then
-# --- Debian specific
-    TARGETS[hockey.lua]=.local/share/vlc/lua/sd/hockey.lua
+if $WSL; then
+# --- For Debian in Windows
+    TARGETS[i3-wsl.config]=.config/i3/config
+    TARGETS[i3status-wsl.conf]=.i3status.conf
+else
+# --- For Debian
+    TARGETS[i3-debian.config]=.config/i3/config
+    TARGETS[i3status-debian.conf]=.i3status.conf
     TARGETS[emacs.service]=.config/systemd/user/emacs.service
     TARGETS[emacsclient.desktop]=.local/share/applications/emacsclient.desktop
 fi
