@@ -371,7 +371,7 @@ with the menu items now, it is just as easy to set them here.
   (set-face-background hl-line-face "azure2")
 
   ;; Use small-ish font
-  (set-face-attribute 'default nil :height 94)
+  (set-face-attribute 'default nil :height 120)
 
   ;; Nice scrolling
   (setq scroll-margin 10

@@ -11,7 +11,6 @@ TARGETS[fonts.conf]=.config/fontconfig/fonts.conf
 TARGETS[Xresources]=.Xresources
 TARGETS[jupyter.js]=.jupyter/custom/custom.js
 TARGETS[jupyter_notebook_config.py]=.jupyter/jupyter_notebook_config.py
-TARGETS[gpg-agent.conf]=.gnupg/gpg-agent.conf
 TARGETS[gemrc]=.gemrc
 TARGETS[npmrc]=.npmrc
 TARGETS[flake8]=.config/flake8
@@ -22,6 +21,10 @@ if $WSL; then
 # --- For Debian in Windows
     TARGETS[i3-wsl.config]=.config/i3/config
     TARGETS[i3status-wsl.conf]=.i3status.conf
+# --- Mac OS X specific
+elif [[ $(uname) == 'Darwin' ]]; then
+    TARGETS[gpg-agent.conf]=.gnupg/gpg-agent.conf
+    TARGETS[gpg.conf]=.gnupg/gpg.conf
 else
 # --- For Debian
     TARGETS[i3-debian.config]=.config/i3/config
