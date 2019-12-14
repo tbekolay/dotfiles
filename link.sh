@@ -17,6 +17,7 @@ TARGETS[flake8]=.config/flake8
 TARGETS[ignore]=.ignore
 TARGETS[ripgreprc]=.ripgreprc
 TARGETS[asflog.conf]=asf/NLog.config
+TARGETS[zshrc]=.zshrc
 if $WSL; then
 # --- For Debian in Windows
     TARGETS[i3-wsl.config]=.config/i3/config
