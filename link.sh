@@ -18,18 +18,14 @@ TARGETS[ignore]=.ignore
 TARGETS[ripgreprc]=.ripgreprc
 TARGETS[asflog.conf]=asf/NLog.config
 TARGETS[zshrc]=.zshrc
-if $WSL; then
-# --- For Debian in Windows
-    TARGETS[i3-wsl.config]=.config/i3/config
-    TARGETS[i3status-wsl.conf]=.i3status.conf
 # --- Mac OS X specific
-elif [[ $(uname) == 'Darwin' ]]; then
+if [[ $(uname) == 'Darwin' ]]; then
     TARGETS[gpg-agent.conf]=.gnupg/gpg-agent.conf
     TARGETS[gpg.conf]=.gnupg/gpg.conf
 else
 # --- For Debian
-    TARGETS[i3-debian.config]=.config/i3/config
-    TARGETS[i3status-debian.conf]=.i3status.conf
+    TARGETS[i3.config]=.config/i3/config
+    TARGETS[i3status.conf]=.i3status.conf
     TARGETS[emacs.service]=.config/systemd/user/emacs.service
     TARGETS[emacsclient.desktop]=.local/share/applications/emacsclient.desktop
 fi
