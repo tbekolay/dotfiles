@@ -31,6 +31,10 @@ if [[ $(uname) == 'Darwin' ]]; then
         $path
     )
 
+# --- WSL specific
+elif grep -q Microsoft /proc/version; then
+    umask 022
+
 # --- Debian specific
 else
     export BROWSER="google-chrome"
