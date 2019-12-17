@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+WSL="grep -q Microsoft /proc/version"
 declare -A TARGETS
 TARGETS[nanorc.d]=.nanorc.d
 TARGETS[xkb]=.xkb
@@ -28,6 +29,7 @@ else
     TARGETS[i3status.conf]=.i3status.conf
     TARGETS[emacs.service]=.config/systemd/user/emacs.service
     TARGETS[emacsclient.desktop]=.local/share/applications/emacsclient.desktop
+    TARGETS[xsessionrc]=.xsessionrc
 fi
 
 checkandlink () {
