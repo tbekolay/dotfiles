@@ -23,15 +23,8 @@ If you are playing around with the =org-mode= version, note:
 - The =tab= key opens/close a particular section
 - Shift + =tab= cycles between the outline and full text
 - Render it with:  =C-c C-v t=
-- Creates a file:  =~/.emacs-ext.el=
 
-** Emacs Executable
-
-This file is really a /script/ that requires version 24 of Emacs.
-I install Emacs using [[http://brew.sh/][Homebrew]] or [[https://packages.debian.org/sid/emacs][apt-get]], depending
-on what operating system I'm on.
-
-*** Mac OS X
+** Mac OS X setup
 
 #+BEGIN_EXAMPLE
   brew install emacs --cocoa --srgb --with-gnutls
@@ -42,7 +35,7 @@ I manually link =Emacs.app= rather than using =brew linkapps=
 because I don't like having all the Python "apps" like Idle
 linked to =/Applications=.
 
-*** Debian
+** Debian setup
 
 Debian unstable (sid) has =emacs24= as its default now, so
 installation is as simple as
@@ -59,7 +52,7 @@ I'll do the same, though this isn't designed to be used by others.
 #+BEGIN_SRC elisp :comments off :padline no
   ;;; init.el --- Trevor Bekolay's emacs configuration.
   ;;
-  ;; Copyright (c) 2014 Trevor Bekolay
+  ;; Copyright (c) 2014-2019 Trevor Bekolay
   ;;
   ;; Author: Trevor Bekolay <tbekolay@gmail.com>
   ;; URL: https://github.com/tbekolay/dotfiles
@@ -82,7 +75,7 @@ I'll do the same, though this isn't designed to be used by others.
 
   ;;; License:
 
-  ;; Copyright (c) 2014-2015 Trevor Bekolay
+  ;; Copyright (c) 2014-2019 Trevor Bekolay
   ;;
   ;; Permission is hereby granted, free of charge, to any person
   ;; obtaining a copy of this software and associated documentation
@@ -107,9 +100,8 @@ I'll do the same, though this isn't designed to be used by others.
   ;;; Code:
 #+END_SRC
 
-* General Settings
-
-** Directory Structure
+* General settings
+** Directory structure
 
 We'll load a few directories into variables for convenience.
 
@@ -130,7 +122,7 @@ to make sure the following directories have been created.
         (make-directory dir))))
 #+END_SRC
 
-** Setting up the Load Path
+** Setting up the load path
 
 Extra packages not available via the package manager go in
 =~/.emacs.d/elisp=
@@ -167,8 +159,8 @@ This will tangle and byte-compile whenever we save this file.
   (add-hook 'after-save-hook 'tb-tangle-init)
 #+END_SRC
 
-* Package Initialization
-** Package Manager
+* Package initialization
+** Package manager
 
 Emacs has become like every other operating system, and now has a
 [[http://tromey.com/elpa/][package manager]] with its own collection repository, but since it is
@@ -208,7 +200,7 @@ so we're safe.
   (epl-upgrade)
 #+END_SRC
 
-** Installing Extra Packages
+** Installing extra packages
 
 Here are the packages from Howard Abrams. Leaving them here so that
 I can review them eventually.
@@ -287,7 +279,7 @@ And even more packages to look into, or learn better
 - =abbrev=
 - =winner-mode=
 
-* Variables
+* User info
 
 General settings about me that other packages can use.
 
@@ -296,7 +288,7 @@ General settings about me that other packages can use.
         user-mail-address "tbekolay@gmail.com")
 #+END_SRC
 
-** Whitespace
+* Whitespace
 
 I have learned to distrust tabs in my source code, so let's make
 sure that we only have spaces. See [[http://ergoemacs.org/emacs/emacs_tabs_space_indentation_setup.html][this discussion]] for details.
@@ -320,7 +312,64 @@ Good Unix to put newlines at the end of all files.
   (setq require-final-newline t)
 #+END_SRC
 
-** File Sizes
+When I save, I want to always, and I do mean always strip all
+trailing whitespace from the file.
+
+#+BEGIN_SRC elisp
+  (add-hook 'before-save-hook 'whitespace-cleanup)
+#+END_SRC
+
+Except when I don't want to do this, which happens
+when whitespace is meaningful (e.g., =cram= tests,
+adding newlines to Markdown).
+
+#+BEGIN_SRC elisp
+  (defun tb-dont-clean-whitespace ()
+    "Sets the before-save-hook to nil in this buffer."
+    (add-hook 'before-save-hook nil nil t))
+#+END_SRC
+
+I like to see bad whitespace. But not all whitespace.
+
+#+BEGIN_SRC elisp
+  (use-package whitespace
+      :init
+      (setq whitespace-line-column 80
+            whitespace-style '(face tabs empty trailing lines-tail))
+      (add-hook 'text-mode-hook (whitespace-mode +1))
+      (add-hook 'org-mode-hook (whitespace-mode +1)))
+#+END_SRC
+
+Here's a nice helper function to reindent the whole buffer.
+
+#+BEGIN_SRC elisp :tangle no
+  FIXME!
+  (defun tb-indent-buffer ()
+    "Indent the whole buffer."
+    (call-interactively 'mark-whole-buffer)
+    (call-interactively 'indent-region))
+#+END_SRC
+
+Here's one to convert underscore style variables to camelcase.
+
+#+BEGIN_SRC elisp
+  (defun tb-query-to-camelcase ()
+    (interactive)
+    (save-excursion
+      (goto-char (point-min))
+      (query-replace-regexp "\(\w\)_\(\w\)" "\1\,(upcase \2)")))
+#+END_SRC
+
+#+BEGIN_SRC elisp
+  (defun tb-to-camelcase ()
+    (interactive)
+    (save-excursion
+      (goto-char (point-min))
+      (while (search-forward-regexp "\(\w\)_\(\w\)" nil 'noerror)
+        (replace-match "\1\,(upcase \2)" nil 'literal))))
+#+END_SRC
+
+* File sizes
 
 By default, =emacs= garbage collects after 0.76 MB of accumulated data.
 That's too frequent! Let's go with every 50 MB.
@@ -335,18 +384,7 @@ Warn when opening files bigger than 100 MB.
   (setq large-file-warning-threshold 100000000)
 #+END_SRC
 
-** Aggressive Auto Indention
-
-Automatically indent without use of the tab found in [[http://endlessparentheses.com/permanent-auto-indentation.html][this article]],
-and seems to be quite helpful for many programming languages.
-
-#+BEGIN_SRC elisp
-  (use-package aggressive-indent
-      :init (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
-            (add-hook 'css-mode-hook #'aggressive-indent-mode))
-#+END_SRC
-
-* User Interface (UI)
+* User interface (UI)
 ** General
 
 I've been using Emacs for many years, and appreciate a certain
@@ -422,47 +460,6 @@ with the menu items now, it is just as easy to set them here.
         mouse-yank-at-point t)
 #+END_SRC
 
-** Windowing
-
-I mostly use Emacs in a GUI, with multiple windows.
-
-There are two nice packages for dealing with changing window / frame focus
-with the keyboard. We'll use them, and have them play nice together.
-
-TODO these aren't working right now. Keybinding issues with orgmode I think.
-
-#+BEGIN_SRC elisp
-  (use-package windmove
-      :disabled t
-      :init (windmove-default-keybindings))
-
-  (use-package framemove
-      :disabled t
-      :init (setq framemove-hook-into-windmove t)
-      :config (windmove-default-keybindings))
-#+END_SRC
-
-Here's a helper function. Will I use it a lot? TBD!
-
-#+BEGIN_SRC elisp
-  (defun tb-swap-windows ()
-    "If you have 2 windows, it swaps them."
-    (interactive)
-    (if (/= (count-windows) 2)
-        (message "You need exactly 2 windows to do this.")
-      (let* ((w1 (car (window-list)))
-             (w2 (cadr (window-list)))
-             (b1 (window-buffer w1))
-             (b2 (window-buffer w2))
-             (s1 (window-start w1))
-             (s2 (window-start w2)))
-        (set-window-buffer w1 b2)
-        (set-window-buffer w2 b1)
-        (set-window-start w1 s2)
-        (set-window-start w2 s1)))
-    (other-window 1))
-#+END_SRC
-
 ** Mac OS X
 
 This section contains Mac OS X specific settings.
@@ -532,7 +529,7 @@ which uses the configured preferred browser.
           browse-url-generic-program "exo-open"))
 #+END_SRC
 
-** Mode Line
+** Mode line
 
 I'm still not completely sure how I want to configure the modeline,
 so for the time being I'll defer most of the choices to the
@@ -577,23 +574,7 @@ Highlight differences between current and committed files in the fringe.
       :config (global-diff-hl-mode +1)
               (add-hook 'dired-mode-hook 'diff-hl-dired-mode))
 #+END_SRC
-** Block folding
-There's a new folding implementation on the block:
-[[https://github.com/mrkkrp/vimish-fold][=vimish-fold=]].
-We'll try it out.
-
-#+BEGIN_SRC elisp :tangle no
-  ;; Not useful to me at the moment...
-  (use-package vimish-fold
-      :demand
-      :config (vimish-fold-global-mode 1)
-      :bind (("C-<tab>" . vimish-fold)
-             ("C-<iso-lefttab>" . vimish-fold-delete)
-             ("M-n" . vimish-fold-next-fold)
-             ("M-p" . vimish-fold-previous-fold)))
-#+END_SRC
-
-* Key Bindings
+* Key bindings
 ** Searching
 
 It's more likely useful to have regex searches
@@ -606,7 +587,7 @@ than non-regex searches, so let's switch things around.
   (global-set-key (kbd "C-M-r") 'isearch-backward)
 #+END_SRC
 
-* Loading and Finding Files
+* Loading and finding files
 ** Autorevert
 
 There are almost no cases in which I want to be editing a stale buffer.
@@ -723,7 +704,7 @@ Better =M-x= behavior, using Ido.
              ("C-c C-c M-x" . execute-extended-command)))
 #+END_SRC
 
-** Backup Settings
+** Backup settings
 
 Yeah, we could move all backup files to some directory,
 but in N years of using Emacs, I've never once looked in this
@@ -735,7 +716,7 @@ directory for some magical lost text. Fuck backups! Git for life!
   (setq auto-save-list-file-prefix nil)
 #+END_SRC
 
-** Save Place
+** Save place
 
 The [[http://www.emacswiki.org/emacs/SavePlace][Save Place]] mode will remember your location in a file.
 
@@ -744,7 +725,7 @@ The [[http://www.emacswiki.org/emacs/SavePlace][Save Place]] mode will remember 
       :init (setq-default save-place t))
 #+END_SRC
 
-** Save History
+** Save history
 
 Saves a few more things.
 
@@ -774,7 +755,7 @@ Especially useful for TypeScript development.
       (global-company-mode))
 #+END_SRC
 
-** Spell Checking
+** Spell checking
 
 #+BEGIN_SRC elisp
   ;; find aspell and hunspell automatically
@@ -801,76 +782,7 @@ Especially useful for TypeScript development.
        (add-hook 'python-mode-hook 'flyspell-prog-mode))))
 #+END_SRC
 
-* Miscellaneous Settings
-
-** Whitespace
-
-When I save, I want to always, and I do mean always strip all
-trailing whitespace from the file.
-
-#+BEGIN_SRC elisp
-  (add-hook 'before-save-hook 'whitespace-cleanup)
-#+END_SRC
-
-Except when I don't want to do this, which happens
-when whitespace is meaningful (e.g., =cram= tests,
-adding newlines to Markdown).
-
-#+BEGIN_SRC elisp
-  (defun tb-dont-clean-whitespace ()
-    "Sets the before-save-hook to nil in this buffer."
-    (add-hook 'before-save-hook nil nil t))
-#+END_SRC
-
-I like to see bad whitespace. But not all whitespace.
-
-#+BEGIN_SRC elisp
-  (use-package whitespace
-      :init
-      (setq whitespace-line-column 80
-            whitespace-style '(face tabs empty trailing lines-tail))
-      (add-hook 'text-mode-hook (whitespace-mode +1))
-      (add-hook 'org-mode-hook (whitespace-mode +1)))
-#+END_SRC
-
-Here's a nice helper function to reindent the whole buffer.
-
-#+BEGIN_SRC elisp :tangle no
-  FIXME!
-  (defun tb-indent-buffer ()
-    "Indent the whole buffer."
-    (call-interactively 'mark-whole-buffer)
-    (call-interactively 'indent-region))
-#+END_SRC
-
-Here's one to convert underscore style variables to camelcase.
-
-#+BEGIN_SRC elisp
-  (defun tb-query-to-camelcase ()
-    (interactive)
-    (save-excursion
-      (goto-char (point-min))
-      (query-replace-regexp "\(\w\)_\(\w\)" "\1\,(upcase \2)")))
-#+END_SRC
-
-#+BEGIN_SRC elisp
-  (defun tb-to-camelcase ()
-    (interactive)
-    (save-excursion
-      (goto-char (point-min))
-      (while (search-forward-regexp "\(\w\)_\(\w\)" nil 'noerror)
-        (replace-match "\1\,(upcase \2)" nil 'literal))))
-#+END_SRC
-
-** Expand-region
-
-This seems pretty useful. I should try to muscle-memory it.
-
-#+BEGIN_SRC elisp
-  (use-package expand-region
-      :bind (("C-=" . er/expand-region)
-             ("C-+" . er/contract-region)))
-#+END_SRC
+* Miscellaneous settings
 
 ** Auto-indent yanked text
 
@@ -1035,10 +947,7 @@ install =magit= so that we can have nice interactive rebase buffers.
       :init (setq magit-last-seen-setup-instructions "1.4.0"))
 #+END_SRC
 
-* Org-Mode
-
-See [[file:emacs-org.org][emacs-org-mode.el]] for details on my [[http://www.orgmode][Org-Mode]] settings.
-
+* Org-mode
 #+BEGIN_SRC elisp :tangle no
   (require 'init-org-mode)
 #+END_SRC
@@ -1060,8 +969,7 @@ Make AUCTex aware of style files and multi-file documents.
       :mode (("\\.tex$" . LaTeX-mode)))
 #+END_SRC
 
-* Programming Languages
-** Shell scripting
+* Shell scripting
 
 Make shell scripts executable on save.
 
@@ -1076,7 +984,7 @@ Make shell scripts executable on save.
   (add-to-list 'auto-mode-alist '("\\.zsh\\'" . shell-script-mode))
 #+END_SRC
 
-** Python
+* Python
 
 My bread and butter. Let's make Emacs awesome for Python development.
 
@@ -1102,9 +1010,12 @@ Have =flake8= run automatically with Flycheck.
   (use-package company-anaconda)
   (use-package anaconda-mode
       :init (add-hook 'python-mode-hook 'anaconda-mode))
+  (use-package blacken
+      :init (add-hook 'python-mode-hook 'blacken-mode)
+      :custom (blacken-executable "/home/tbekolay/.virtualenvs/nengo/bin/black"))
 #+END_SRC
 
-** Matlab
+* Matlab
 Gross. But we look at it every now and then.
 
 #+BEGIN_SRC elisp
@@ -1113,12 +1024,10 @@ Gross. But we look at it every now and then.
      :mode ("\\.m$" . octave-mode))
 #+END_SRC
 
-** JavaScript
-
-See [[file:emacs-javascript.org][emacs-javascript.el]] for details on working with JavaScript.
+* JavaScript
 
 #+BEGIN_SRC elisp
-  (setq js-indent-level 4)
+  (setq js-indent-level 2)
   (use-package json-mode
        :init
        (add-hook 'json-mode-hook
@@ -1139,17 +1048,14 @@ See [[file:emacs-javascript.org][emacs-javascript.el]] for details on working wi
                         (lambda () (setq web-mode-enable-auto-quoting nil))))
 #+END_SRC
 
-
-** YAML
+* YAML
 
 #+BEGIN_SRC elisp
   (use-package yaml-mode
       :mode (("\\.yml$" . yaml-mode) ("\\.yaml$" . yaml-mode)))
 #+END_SRC
 
-** HTML, CSS and other Web Programming
-
-See [[file:emacs-web.org][emacs-web.el]] for details on working with HTML and its ilk.
+* HTML, CSS and other web programming
 
 #+BEGIN_SRC elisp :tangle no
   (load-library "init-web")
@@ -1163,7 +1069,11 @@ See [[file:emacs-web.org][emacs-web.el]] for details on working with HTML and it
   :init (setq markdown-command "multimarkdown"))
 #+END_SRC
 
-** Other
+#+BEGIN_SRC elisp
+(setq css-indent-offset 2)
+#+END_SRC
+
+* Other
 
 Here's the list Prelude gives.
 
