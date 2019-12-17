@@ -11,6 +11,7 @@
   sh = show --stat
   showtrackedignored = ls-files -i --exclude-standard
   st = status -sb
+  pushf = push --force-with-lease
 
 [branch]
   autosetuprebase = always

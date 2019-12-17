@@ -24,8 +24,8 @@ Host nengoforum
 Host abrgpu
      HostName abrgpu.uwaterloo.ca
      Port 36563
-     User abruser
-     PubkeyAuthentication no
+     User tbekolay
+     IdentityFile ~/.ssh/id_rsa
 
 Host gl
      HostName gl.appliedbrainresearch.com
@@ -35,9 +35,9 @@ Host gl
 
 Host abrhost
      User tbekolay
-     HostName 10.42.0.2
-     ProxyCommand ssh gl -W %h:%p
-     Port 22
+     HostName abrrt2.uwaterloo.ca
+     ProxyCommand ssh abrgpu -W %h:%p
+     Port 52413
 
 Host abrmh
      User tbekolay
@@ -51,7 +51,21 @@ Host abrghrd
      ProxyCommand ssh abrhost -W %h:%p
      Port 22
 
+Host intelresearch
+     User celiasmith
+     HostName ssh.intel-research.net
+
 Host intelhost
      User celiasmith
      HostName ncl-abr.research.intel-research.net
-     ProxyCommand ssh celiasmith@ssh.intel-research.net -W %h:%p
+     ProxyCommand ssh intelresearch -W %h:%p
+
+Host abr02
+     Hostname abrrt2.uwaterloo.ca
+     User pawel
+     Port 52314
+     LocalForward 8888 127.0.0.1:8888
+     LocalForward 8080 127.0.0.1:8080
+     ServerAliveInterval 120
+     ServerAliveCountMax 2
+     ProxyCommand ssh abrgpu -W %h:%p
