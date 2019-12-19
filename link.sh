@@ -30,6 +30,7 @@ else
     TARGETS[emacs.service]=.config/systemd/user/emacs.service
     TARGETS[emacsclient.desktop]=.local/share/applications/emacsclient.desktop
     TARGETS[xsessionrc]=.xsessionrc
+    TARGETS[rofi.config]=.config/rofi/config.rasi
 fi
 
 checkandlink () {
