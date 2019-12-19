@@ -2,3 +2,6 @@
 xset r rate 180 40
 # Disable screen blanking
 xset s off -dpms
+
+# Have to set PATH here for dmenu / rofi to work with i3
+PATH="$HOME/bin:$PATH"

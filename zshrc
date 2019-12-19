@@ -100,6 +100,7 @@ bindkey -M emacs "$key_info[Down]" history-substring-search-down
 zplugin ice svn
 zplugin snippet PZT::modules/git
 
+zplugin snippet PZT::modules/ssh/init.zsh
 zplugin snippet PZT::modules/gpg/init.zsh
 
 zplugin ice svn
