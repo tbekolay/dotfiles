@@ -18,6 +18,7 @@ TARGETS[flake8]=.config/flake8
 TARGETS[ignore]=.ignore
 TARGETS[ripgreprc]=.ripgreprc
 TARGETS[asflog.conf]=asf/NLog.config
+TARGETS[init.el]=.emacs.d/init.el
 TARGETS[zshrc]=.zshrc
 # --- Mac OS X specific
 if [[ $(uname) == 'Darwin' ]]; then
