@@ -20,6 +20,7 @@ TARGETS[ripgreprc]=.ripgreprc
 TARGETS[asflog.conf]=asf/NLog.config
 TARGETS[init.el]=.emacs.d/init.el
 TARGETS[zshrc]=.zshrc
+TARGETS[zshenv]=.zshenv
 # --- Mac OS X specific
 if [[ $(uname) == 'Darwin' ]]; then
     TARGETS[gpg-agent.conf]=.gnupg/gpg-agent.conf
