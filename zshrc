@@ -11,8 +11,12 @@ export PROJECT_HOME="$HOME/Code"
 # --- Ripgrep
 export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
 
+# --- Mac OS X specific
+if [[ "$OSTYPE" == "darwin"* ]]; then
+     ;
+
 # --- WSL specific
-if grep -q Microsoft /proc/version; then
+elif grep -q Microsoft /proc/version; then
     umask 022
 
 # --- Debian specific
