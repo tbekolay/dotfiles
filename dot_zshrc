@@ -1,0 +1,150 @@
+# --- Basics
+export ALTERNATE_EDITOR="nano"
+export EDITOR="nvim"
+export VISUAL="nvim"
+export PAGER="less -"
+export TERMINAL="wezterm start"
+
+# --- Ripgrep
+export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
+
+# --- WSL specific
+if grep -q Microsoft /proc/version; then
+    umask 022
+
+# --- Debian specific
+else
+    export TF_FORCE_GPU_ALLOW_GROWTH="true"
+    export BROWSER="microsoft-edge"
+    systemdpath=$(systemctl --user show-environment | grep '^PATH')
+    if ((${+commands[emacs]})) && [[ $systemdpath != *"/home/tbekolay/"* ]]; then
+        systemctl --user import-environment PATH
+        systemctl restart --user emacs
+    fi
+fi
+
+# --- Convenience functions
+exe() {
+    echo "\$ $@"
+    "$@"
+}
+
+RSYNCOPTS=("-rtuv" "--exclude=*.pyc")
+LOIHI="$HOME/Code/nengo-loihi/"
+push_intel() {
+    rsync "${RSYNCOPTS[@]}" --delete "$LOIHI" "intelhost:trevor/nengo-loihi"
+}
+pull_intel() {
+    rsync "${RSYNCOPTS[@]}" "intelhost:trevor/nengo-loihi/" "$LOIHI"
+}
+push_abr() {
+    rsync "${RSYNCOPTS[@]}" --delete "$LOIHI" "abrhost:nengo-loihi"
+}
+pull_abr() {
+    rsync "${RSYNCOPTS[@]}" "abrhost:nengo-loihi/" "$LOIHI"
+}
+
+# --- zinit configuration
+
+if [[ ! -d ~/.zinit ]]; then
+    mkdir ~/.zinit
+    git clone git@github.com:zdharma-continuum/zinit.git ~/.zinit/bin
+fi
+
+source ~/.zinit/bin/zinit.zsh
+zinit snippet PZT::modules/environment/init.zsh
+zinit snippet PZT::modules/terminal/init.zsh
+
+zinit ice nocompile
+zinit snippet PZT::modules/editor/init.zsh
+
+zinit snippet PZT::modules/history/init.zsh
+zinit snippet PZT::modules/spectrum/init.zsh
+
+zinit light lukechilds/zsh-better-npm-completion
+zinit light zsh-users/zsh-completions
+zinit light zdharma-continuum/fast-syntax-highlighting
+
+zinit light zsh-users/zsh-history-substring-search
+bindkey -M emacs "$key_info[Control]P" history-substring-search-up
+bindkey -M emacs "$key_info[Control]N" history-substring-search-down
+bindkey -M emacs "$key_info[Up]" history-substring-search-up
+bindkey -M emacs "$key_info[Down]" history-substring-search-down
+
+zstyle ':prezto:module:git:alias' skip yes
+zinit ice svn
+zinit snippet PZT::modules/git
+
+zinit snippet PZT::modules/ssh/init.zsh
+zinit snippet PZT::modules/gpg/init.zsh
+
+zinit ice svn
+zinit snippet PZT::modules/python
+
+ZSH_TAB_TITLE_ONLY_FOLDER=true
+ZSH_TAB_TITLE_CONCAT_FOLDER_PROCESS=true
+ZSH_TAB_TITLE_DEFAULT_DISABLE_PREFIX=true
+zinit light trystan2k/zsh-tab-title
+
+setopt promptsubst
+zinit snippet "$HOME/.tbekolay-theme.zsh"
+
+# --- nvim
+alias vim='nvim'
+alias vimdiff='nvim -d'
+
+# --- chezmoi
+alias cm='chezmoi'
+
+# --- git
+alias gra='git rebase --abort'
+alias grc='git rebase --continue'
+alias gri='git rebase --interactive'
+alias grs='git rebase --skip'
+
+# --- pass
+alias p='pass'
+alias pp='pass -c'
+
+# --- exa
+alias ls='exa --group-directories-first'
+alias l='exa -laF --group-directories-first --git'
+alias tree='exa -T --group-directories-first'
+
+# --- Install completions
+autoload -Uz compinit
+compinit
+zinit cdreplay -q
+
+# --- Set or reset options
+setopt EXTENDED_GLOB
+unsetopt BEEP
+unsetopt CLOBBER
+unsetopt AUTO_CD
+
+# --- mongodb aliases
+# mongo
+
+# --- direnv
+eval "$(direnv hook zsh)"
+
+# --- conda
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/tbekolay/Apps/mambaforge/bin/conda' 'shell.zsh' 'hook' 2>/dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/tbekolay/Apps/mambaforge/etc/profile.d/conda.sh" ]; then
+        . "/home/tbekolay/Apps/mambaforge/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/tbekolay/Apps/mambaforge/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+
+if [ -f "/home/tbekolay/Apps/mambaforge/etc/profile.d/mamba.sh" ]; then
+    . "/home/tbekolay/Apps/mambaforge/etc/profile.d/mamba.sh"
+fi
+# <<< conda initialize <<<
