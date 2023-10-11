@@ -1,0 +1,38 @@
+MODE: dev
+
+all: &all
+  MAILGUN_KEY: {{ pass "ne/mailgun_key" }}
+  STRIPE_KEY: {{ pass "ne/stripe_key" }}
+  AUTH_CLIENT_SECRET: {{ pass "ne/auth_client_secret" }}
+  TASK_GPU_CONTEXT: gpu-cluster-1
+  TASK_DEVICE_CONTEXT: abrhost-cluster
+
+  SPACES_URL: https://nyc3.digitaloceanspaces.com
+  SPACES_BUCKET: abr
+  SPACES_KEY: {{ pass "ne/spaces_key" }}
+  SPACES_SECRET: {{ pass "ne/spaces_secret" }}
+
+  DOCKERHUB_USER: tbekolay
+  DOCKERHUB_PASSWORD: {{ pass "w/docker.com" }}
+  DOCKERHUB_ORG: tbekolay
+
+  K8S_NAMESPACE: tbekolay
+  K8S_LOCAL_CONTEXT: minikube
+
+  TASK_SSH_KEY: /home/tbekolay/.ssh/id_rsa
+
+  GCP_CREDENTIALS_FILE: /home/tbekolay/Code/nengo-edge-creds.json
+  CLIENT_DIR: /home/tbekolay/Code/nengo-edge-client
+
+dev:
+  <<: *all
+  # DATABASE_HOST: mongodb+srv://nengo-edge-dev2.vju67.mongodb.net
+  # DATABASE_USER: tbekolay
+  # DATABASE_PASSWORD: {{ pass "ne/dev_db_pw" }}
+  DATABASE_HOST: mongodb://localhost
+
+staging:
+  <<: *all
+  DATABASE_HOST: mongodb+srv://staging.30yq93d.mongodb.net
+  DATABASE_USER: tbekolay
+  DATABASE_PASSWORD: {{ pass "ne/staging_db_pw" }}

@@ -1,0 +1,72 @@
+[user]
+name = Trevor Bekolay
+email = tbekolay@gmail.com
+
+[alias]
+ca = commit --amend
+ci = commit
+co = checkout
+ds = diff --staged
+lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+ls = ls-files
+sh = show --stat
+showtrackedignored = ls-files -i --exclude-standard
+st = status -sb
+pushf = push --force-with-lease
+
+[branch]
+autosetuprebase = always
+
+[color]
+branch = auto
+diff = auto
+interactive = auto
+pager = true
+status = auto
+ui = auto
+[color "branch"]
+current = green bold
+local = green
+remote = red bold
+[color "diff"]
+meta = yellow bold
+frag = magenta bold
+old = red bold
+new = green bold
+whitespace = red reverse
+[color "status"]
+added = green bold
+changed = yellow bold
+untracked = red
+
+[core]
+autocrlf = input
+editor = nvim
+pager = less -FRSX
+whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
+excludesfile = /home/tbekolay/.gitignore_global
+
+[diff]
+tool = diffmerge
+mnemonicprefix = true
+algorithm = histogram
+
+[fetch]
+prune = true
+
+[merge]
+log = true
+
+[pull]
+rebase = true
+
+[init]
+defaultBranch = main
+[credential]
+helper = cache --timeout=3600
+[credential "https://github.com"]
+helper =
+helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+helper =
+helper = !/usr/bin/gh auth git-credential

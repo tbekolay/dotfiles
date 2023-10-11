@@ -3,45 +3,19 @@ export ALTERNATE_EDITOR="nano"
 export EDITOR="nvim"
 export VISUAL="nvim"
 export PAGER="less -"
+{{- if eq .chezmoi.hostname "bekolay" }}
 export TERMINAL="wezterm start"
+export TF_FORCE_GPU_ALLOW_GROWTH="true"
+export BROWSER="microsoft-edge"
+{{- end }}
 
 # --- Ripgrep
 export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
-
-# --- WSL specific
-if grep -q Microsoft /proc/version; then
-    umask 022
-
-# --- Debian specific
-else
-    export TF_FORCE_GPU_ALLOW_GROWTH="true"
-    export BROWSER="microsoft-edge"
-    systemdpath=$(systemctl --user show-environment | grep '^PATH')
-    if ((${+commands[emacs]})) && [[ $systemdpath != *"/home/tbekolay/"* ]]; then
-        systemctl --user import-environment PATH
-        systemctl restart --user emacs
-    fi
-fi
 
 # --- Convenience functions
 exe() {
     echo "\$ $@"
     "$@"
-}
-
-RSYNCOPTS=("-rtuv" "--exclude=*.pyc")
-LOIHI="$HOME/Code/nengo-loihi/"
-push_intel() {
-    rsync "${RSYNCOPTS[@]}" --delete "$LOIHI" "intelhost:trevor/nengo-loihi"
-}
-pull_intel() {
-    rsync "${RSYNCOPTS[@]}" "intelhost:trevor/nengo-loihi/" "$LOIHI"
-}
-push_abr() {
-    rsync "${RSYNCOPTS[@]}" --delete "$LOIHI" "abrhost:nengo-loihi"
-}
-pull_abr() {
-    rsync "${RSYNCOPTS[@]}" "abrhost:nengo-loihi/" "$LOIHI"
 }
 
 # --- zinit configuration
@@ -66,8 +40,6 @@ zinit light zsh-users/zsh-completions
 zinit light zdharma-continuum/fast-syntax-highlighting
 
 zinit light zsh-users/zsh-history-substring-search
-bindkey -M emacs "$key_info[Control]P" history-substring-search-up
-bindkey -M emacs "$key_info[Control]N" history-substring-search-down
 bindkey -M emacs "$key_info[Up]" history-substring-search-up
 bindkey -M emacs "$key_info[Down]" history-substring-search-down
 
@@ -80,11 +52,6 @@ zinit snippet PZT::modules/gpg/init.zsh
 
 zinit ice svn
 zinit snippet PZT::modules/python
-
-ZSH_TAB_TITLE_ONLY_FOLDER=true
-ZSH_TAB_TITLE_CONCAT_FOLDER_PROCESS=true
-ZSH_TAB_TITLE_DEFAULT_DISABLE_PREFIX=true
-zinit light trystan2k/zsh-tab-title
 
 setopt promptsubst
 zinit snippet "$HOME/.tbekolay-theme.zsh"
@@ -122,12 +89,11 @@ unsetopt BEEP
 unsetopt CLOBBER
 unsetopt AUTO_CD
 
-# --- mongodb aliases
-# mongo
-
 # --- direnv
 eval "$(direnv hook zsh)"
 
+
+{{- if eq .chezmoi.hostname "bekolay" }}
 # --- conda
 
 # >>> conda initialize >>>
@@ -148,3 +114,11 @@ if [ -f "/home/tbekolay/Apps/mambaforge/etc/profile.d/mamba.sh" ]; then
     . "/home/tbekolay/Apps/mambaforge/etc/profile.d/mamba.sh"
 fi
 # <<< conda initialize <<<
+
+# bun completions
+[ -s "/home/tbekolay/.bun/_bun" ] && source "/home/tbekolay/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+{{- end }}

@@ -1,0 +1,5 @@
+{{- if ne .chezmoi.hostname "bekolay" }}
+.nengo-edge/config.yml
+.wezterm.lua
+{{- end }}
+

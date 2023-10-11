@@ -1,4 +1,4 @@
-local wezterm = require 'wezterm'
+local wezterm = require("wezterm")
 local hostname = wezterm.hostname()
 local config = {}
 
@@ -6,7 +6,7 @@ if wezterm.config_builder then
   config = wezterm.config_builder()
 end
 
-config.color_scheme = 'Dracula (Official)'
+config.color_scheme = "Dracula (Official)"
 
 if hostname == "Bekolay-Windows" then
   config.default_domain = "WSL:Debian"
@@ -14,10 +14,10 @@ else
   config.default_domain = "local"
 end
 
-config.font = wezterm.font 'Fira Code'
+config.font = wezterm.font("Fira Code")
 config.font_size = 9.5
-config.freetype_load_flags = 'NO_HINTING'
-config.freetype_load_target = 'HorizontalLcd'
+config.freetype_load_flags = "NO_HINTING"
+config.freetype_load_target = "HorizontalLcd"
 
 config.enable_tab_bar = false
 
@@ -27,19 +27,34 @@ config.inactive_pane_hsb = {
 }
 config.warn_about_missing_glyphs = false
 
-config.leader = { key = 'w', mods = 'CTRL', timeout_milliseconds = 1000 }
+config.disable_default_key_bindings = true
+config.leader = { key = "w", mods = "SUPER", timeout_milliseconds = 1000 }
 config.keys = {
   {
-    key = 'v',
-    mods = 'LEADER',
-    action = wezterm.action.SplitHorizontal({ domain = 'CurrentPaneDomain' }),
+    key = "v",
+    mods = "LEADER",
+    action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }),
   },
   {
-    key = 'w',
-    mods = 'LEADER|CTRL',
+    key = "w",
+    mods = "LEADER|SUPER",
     action = wezterm.action.ActivatePaneDirection("Next"),
-  }
+  },
+  {
+    key = "=",
+    mods = "LEADER",
+    action = wezterm.action.IncreaseFontSize,
+  },
+  {
+    key = "-",
+    mods = "LEADER",
+    action = wezterm.action.DecreaseFontSize,
+  },
+  {
+    key = "0",
+    mods = "LEADER",
+    action = wezterm.action.ResetFontSize,
+  },
 }
 
 return config
-
