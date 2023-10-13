@@ -27,33 +27,44 @@ config.inactive_pane_hsb = {
 }
 config.warn_about_missing_glyphs = false
 
+local act = wezterm.action
 config.disable_default_key_bindings = true
 config.leader = { key = "w", mods = "SUPER", timeout_milliseconds = 1000 }
 config.keys = {
   {
+    key = "c",
+    mods = "CTRL|SHIFT",
+    action = act.CopyTo("Clipboard"),
+  },
+  {
+    key = "v",
+    mods = "CTRL|SHIFT",
+    action = act.PasteFrom("Clipboard"),
+  },
+  {
     key = "v",
     mods = "LEADER",
-    action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }),
+    action = act.SplitHorizontal({ domain = "CurrentPaneDomain" }),
   },
   {
     key = "w",
     mods = "LEADER|SUPER",
-    action = wezterm.action.ActivatePaneDirection("Next"),
+    action = act.ActivatePaneDirection("Next"),
   },
   {
     key = "=",
     mods = "LEADER",
-    action = wezterm.action.IncreaseFontSize,
+    action = act.IncreaseFontSize,
   },
   {
     key = "-",
     mods = "LEADER",
-    action = wezterm.action.DecreaseFontSize,
+    action = act.DecreaseFontSize,
   },
   {
     key = "0",
     mods = "LEADER",
-    action = wezterm.action.ResetFontSize,
+    action = act.ResetFontSize,
   },
 }
 
