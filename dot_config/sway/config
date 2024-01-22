@@ -4,7 +4,7 @@
 set $mod Mod4
 
 # Set wallpaper
-exec --no-startup-id feh --bg-fill ~/Dropbox/Me/rainbow.png
+output "*" bg ~/Dropbox/Me/rainbow.png fill
 
 # Start dropbox
 exec --no-startup-id dropbox start
@@ -36,9 +36,9 @@ bindsym $mod+Return exec wezterm-gui
 bindsym $mod+Shift+q kill
 
 # start rofi (a program launcher)
-bindsym $mod+d exec rofi -show run -dpi 1
+bindsym $mod+d exec wofi --show run
 # start rofi-pass
-bindsym $mod+s exec rofi-pass -dpi 1
+bindsym $mod+s exec wofi-pass --type --squash
 
 # change focus
 bindsym $mod+Left focus left
@@ -150,3 +150,44 @@ bar {
     tray_output primary
 }
 
+input "17485:13623:tshort_Dactyl-Manuform_(5x7)" {
+    repeat_delay 200
+    repeat_rate 46
+    xkb_numlock enabled
+}
+
+set $left "DP-3"
+set $main "DP-1"
+set $top "DP-2"
+set $right "HDMI-A-1"
+
+output $left {
+    mode 1920x1080@60Hz
+    pos 0 1080
+    subpixel rgb
+}
+output $main {
+    mode 3840x2160@144Hz
+    pos 1920 1080
+    subpixel rgb
+    adaptive_sync on
+    scale 2
+}
+output $top {
+    mode 1920x1080@60Hz
+    subpixel rgb
+    pos 1920 0
+}
+output $right {
+    mode 1920x1080@120Hz
+    subpixel rgb
+    pos 3840 1080
+}
+
+workspace $ws1 output $main
+workspace $ws2 output $right
+workspace $ws3 output $left
+workspace $ws4 output $top
+
+# Fix for GTK apps taking forever to start
+exec systemctl --user import-environment

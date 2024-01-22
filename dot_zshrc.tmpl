@@ -1,14 +1,3 @@
-# --- Basics
-export ALTERNATE_EDITOR="nano"
-export EDITOR="nvim"
-export VISUAL="nvim"
-export PAGER="less -"
-{{- if eq .chezmoi.hostname "bekolay" }}
-export TERMINAL="wezterm start"
-export TF_FORCE_GPU_ALLOW_GROWTH="true"
-export BROWSER="microsoft-edge"
-{{- end }}
-
 # --- Ripgrep
 export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
 
@@ -69,6 +58,14 @@ alias grc='git rebase --continue'
 alias gri='git rebase --interactive'
 alias grs='git rebase --skip'
 
+# --- taskwarrior
+alias t='task'
+
+# --- docker
+alias dcd='docker compose down'
+alias dcu='docker compose up -d'
+alias dcp='docker compose pull'
+
 # --- pass
 alias p='pass'
 alias pp='pass -c'
@@ -92,8 +89,26 @@ unsetopt AUTO_CD
 # --- direnv
 eval "$(direnv hook zsh)"
 
-
 {{- if eq .chezmoi.hostname "bekolay" }}
+# --- TF on GPU
+export TF_GPU_ON=0
+gpu_on() {
+    CUDNN_PATH=$(dirname $(python -c "import nvidia.cudnn;print(nvidia.cudnn.__file__)"))
+    export OLD_LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="$CONDA_PREFIX/lib":"$CUDNN_PATH/lib":"$OLD_LD_LIBRARY_PATH"
+    export XLA_FLAGS="--xla_gpu_cuda_data_dir=$CONDA_PREFIX/lib"
+    export TF_GPU_ON=1
+}
+
+gpu_off() {
+    if [ $TF_GPU_ON -eq "1" ]; then
+        export LD_LIBRARY_PATH="$OLD_LD_LIBRARY_PATH"
+        unset OLD_LD_LIBRARY_PATH
+        unset XLA_FLAGS
+        export TF_GPU_ON=0
+    fi
+}
+
 # --- conda
 
 # >>> conda initialize >>>

@@ -1,0 +1,21 @@
+{{- if eq .chezmoi.hostname "bekloud" -}}
+data.location=/ssd/apps/tasks
+{{- else -}}
+data.location=/mnt/ssd/apps/tasks
+{{- end }}
+
+color.due=rgb440
+color.due.today=rgb440
+color.overdue=green
+color.tagged=
+
+dateformat.annotation=-
+news.version=2.6.0
+
+report.next.columns=id,due.relative,description,project,tags,recur
+report.next.labels=ID,Due,Task,Project,Tags,Recur
+
+urgency.annotations.coefficient=0.0
+urgency.due.coefficient=15.0
+urgency.project.coefficient=0.4
+urgency.tags.coefficient=0.4

@@ -3,4 +3,6 @@
 .nengo-edge/config.yml
 .wezterm.lua
 {{- end }}
-
+{{- if ne .chezmoi.hostname "bekloud" }}
+docker/
+{{- end }}
