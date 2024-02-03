@@ -1,4 +1,5 @@
-export PATH=$HOME/bin:$HOME/.local/share/bob/nvim-bin:$HOME/.local/bin:$HOME/.cargo/bin:$HOME/.npm/bin:/usr/local/bin:/usr/local/sbin/:$PATH
+export GOPATH=$HOME/.go
+export PATH=$HOME/bin:$HOME/.local/share/bob/nvim-bin:$HOME/.local/bin:$HOME/.cargo/bin:$GOPATH/bin:$HOME/.npm/bin:/usr/local/bin:/usr/local/sbin/:$PATH
 export ALTERNATE_EDITOR="nano"
 export EDITOR="nvim"
 export VISUAL="nvim"

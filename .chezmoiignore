@@ -1,5 +1,6 @@
 {{- if ne .chezmoi.hostname "bekolay" }}
 .config/i3/*
+.gcalclirc
 .nengo-edge/config.yml
 .wezterm.lua
 {{- end }}
