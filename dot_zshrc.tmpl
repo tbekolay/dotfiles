@@ -52,6 +52,15 @@ alias vimdiff='nvim -d'
 # --- chezmoi
 alias cm='chezmoi'
 
+# --- buku
+{{- if eq .chezmoi.hostname "bekolay" }}
+alias buku='buku --db /mnt/ssd/apps/buku/bookmarks.db'
+alias shurl='buku --db /mnt/ssd/apps/buku/bookmarks.db --shorten'
+{{- else if eq .chezmoi.hostname "bekloud" }}
+alias buku='buku --db /ssd/apps/buku/bookmarks.db'
+alias shurl='buku --db /ssd/apps/buku/bookmarks.db --shorten'
+{{- end }}
+
 # --- git
 alias gra='git rebase --abort'
 alias grc='git rebase --continue'
