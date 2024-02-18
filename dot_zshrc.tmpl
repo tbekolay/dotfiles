@@ -69,6 +69,11 @@ alias grs='git rebase --skip'
 
 # --- taskwarrior
 alias t='task'
+tt() {
+    gcalcli agenda now tomorrow
+    task overdue
+}
+
 
 # --- docker
 alias dcd='docker compose down'
@@ -97,6 +102,11 @@ unsetopt AUTO_CD
 
 # --- direnv
 eval "$(direnv hook zsh)"
+
+# --- zoxide
+
+unalias zi
+eval "$(zoxide init zsh)"
 
 {{- if eq .chezmoi.hostname "bekolay" }}
 # --- TF on GPU
